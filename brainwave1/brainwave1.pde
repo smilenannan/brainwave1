@@ -5,8 +5,8 @@ int DIST_THRESHOLD3 = 30;
 float FACTOR_COHESION = 100;
 float FACTOR_SEPARATION = 10;
 float FACTOR_ALINGMENT = 10;
-float VELOCITY_LIMIT = 3;
-float TRAIL_SCALE = 1;
+float VELOCITY_LIMIT = 2;
+float TRAIL_SCALE = 2;
 
 float r1 = 1.0; // Cohesion:   pull to center of flock
 float r2 = 0.8; // Separation: avoid bunching up
@@ -18,7 +18,7 @@ Boid[] flock = new Boid[NUM_BOIDS];
 //String msg = "";
    
 void setup(){
-  size(2000, 1000);  
+  size(2000, 1000);
   background(0);
   
   randomSeed(int(random(1,1000)));
@@ -41,34 +41,34 @@ void setup(){
 
  
 void draw(){
-  fill(0, 0, 0, 75);
+  fill(255, 255, 255, 75);
   noStroke();
   rect(0, 0, width, height);
-  
-  noFill();
-  stroke(255);
+  //noFill();
+  //stroke(0);
   strokeWeight(3);
   for(int i=0; i<NUM_BOIDS; ++i){
     flock[i].update();
     flock[i].drawMe();
   }
-  
-  //noStroke();
-  //fill(30);
-  //rect(0, height-20, width, height);
-  //fill(200);
-  //textFont(font);
-  //text(msg, 7, height-7);
+  /*make the area of message
+  noStroke();
+  fill(30);
+  rect(0, height-20, width, height);
+  fill(200);
+  textFont(font);
+  text(msg, 7, height-7);*/
 }
 
-//void mousePressed(){
-  //DIST_THRESHOLD1 = round(random(1,30));
-  //DIST_THRESHOLD2 = DIST_THRESHOLD1+round(random(1,20));
-  //DIST_THRESHOLD3 = DIST_THRESHOLD2+round(random(1,20));
-  //VELOCITY_LIMIT = random(1, 10);
-  //msg = "Area("+DIST_THRESHOLD1+","+DIST_THRESHOLD2+","+DIST_THRESHOLD3+") Velocity("+VELOCITY_LIMIT+")";
-  //println("AREA("+DIST_THRESHOLD1+","+DIST_THRESHOLD2+","+DIST_THRESHOLD3+") VELOCITY("+VELOCITY_LIMIT+")");
-//}
+/*action when the pointer moves
+void mousePressed(){
+  DIST_THRESHOLD1 = round(random(1,30));
+  DIST_THRESHOLD2 = DIST_THRESHOLD1+round(random(1,20));
+  DIST_THRESHOLD3 = DIST_THRESHOLD2+round(random(1,20));
+  VELOCITY_LIMIT = random(1, 10);
+  msg = "Area("+DIST_THRESHOLD1+","+DIST_THRESHOLD2+","+DIST_THRESHOLD3+") Velocity("+VELOCITY_LIMIT+")";
+  println("AREA("+DIST_THRESHOLD1+","+DIST_THRESHOLD2+","+DIST_THRESHOLD3+") VELOCITY("+VELOCITY_LIMIT+")");
+}*/
  
 class Boid{
   Vector v1 = new Vector();
@@ -78,15 +78,19 @@ class Boid{
   float xpos, ypos;
   float vx, vy;
   
+  //draw fish
   void drawMe(){
     line(xpos, ypos, xpos-TRAIL_SCALE*vx, ypos-TRAIL_SCALE*vy);
     stroke(255, 110, 0);
     //stroke(random(0, 255), random(0, 255), random(0, 255));
   }
    
+  //decide next position
   void update(){
+    //initialization of vectors
     v1.x = v1.y = v2.x = v2.y = v3.x = v3.y = 0;
     
+    //decide the three vectors
     rule1();
     rule2();
     rule3();
@@ -95,11 +99,14 @@ class Boid{
     vx += r1*v1.x + r2*v2.x + r3*v3.x;
     vy += r1*v1.y + r2*v2.y + r3*v3.y;
     
+    //decide the absolute of velocity
     limitVelocity();
     
+    //update position
     xpos += vx;
     ypos += vy;
     
+    //move fished from one side to the opposite side 
     if(xpos < 0){
       xpos = width;
     } else if(xpos > width){
@@ -112,6 +119,7 @@ class Boid{
     }
   }
   
+  //decide the absolute of velocities
   void limitVelocity(){
     float velocity = sqrt(sq(vx) + sq(vy));
     if(velocity > VELOCITY_LIMIT){
