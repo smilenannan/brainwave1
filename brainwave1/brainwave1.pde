@@ -128,11 +128,13 @@ class Boid{
     }
   }
   
-  // Cohesion
+  // Cohesion: pull to center of flock
   void rule1(){
+    //initialization of len and count
     float len = 0;
     int count = 0;
     
+ //If "the distance between one boid and the other boid" is bigger than 2, smaller than 3, the "v1.x,y" = "v1.x" + "the position of other boid".
     for(int i=0; i < NUM_BOIDS; ++i){
       if(this != flock[i]){
         len = dist(xpos, ypos, flock[i].xpos, flock[i].ypos);
@@ -144,7 +146,9 @@ class Boid{
       }
     }
     
-    if(count > 0){
+// "v1.x" becomes "the average other boid" / "factor-cohesion"
+
+  if(count > 0){
       v1.x /= count;
       v1.y /= count;
       v1.x = (v1.x - xpos) / FACTOR_COHESION;
