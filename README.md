@@ -10,4 +10,4 @@ For making a work of art by using brain waves
 ##Developers
 *smilenannan
 *kyanamoti
-
+*tatsuya
