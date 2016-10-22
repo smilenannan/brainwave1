@@ -1,4 +1,4 @@
-int NUM_BOIDS = 500;
+int NUM_BOIDS = 50;
 int DIST_THRESHOLD1 = 10;
 int DIST_THRESHOLD2 = 20;
 int DIST_THRESHOLD3 = 30;
@@ -6,11 +6,14 @@ float FACTOR_COHESION = 100;
 float FACTOR_SEPARATION = 10;
 float FACTOR_ALINGMENT = 10;
 float VELOCITY_LIMIT = 2;
-float TRAIL_SCALE = 2;
+float TRAIL_SCALE = 1;
 
 float r1 = 1.0; // Cohesion:   pull to center of flock
 float r2 = 0.8; // Separation: avoid bunching up
 float r3 = 0.1; // Alingment:  match average flock speed
+
+PImage img;
+Ripple ripple;
 
 Boid[] flock = new Boid[NUM_BOIDS];
 
@@ -18,7 +21,11 @@ Boid[] flock = new Boid[NUM_BOIDS];
 //String msg = "";
    
 void setup(){
-  size(2000, 1000);
+  img = loadImage("water.jpg");
+  //tint(255, 255);
+  //image(img, 0, 0);  
+
+  size(500, 400);
   background(0);
   
   randomSeed(int(random(1,1000)));
@@ -38,7 +45,10 @@ void setup(){
   }
   
   frameRate(30);
-  noSmooth();
+  
+  ripple = new Ripple(img);
+  smooth();
+  //noSmooth();
   
   //font = createFont("Courier", 12);
   //msg = "Area("+DIST_THRESHOLD1+","+DIST_THRESHOLD2+","+DIST_THRESHOLD3+") Velocity("+VELOCITY_LIMIT+")";
@@ -46,16 +56,19 @@ void setup(){
 
  
 void draw(){
-  fill(255, 255, 255, 75);
-  noStroke();
-  rect(0, 0, width, height);
+  //fill(255, 255, 255, 75);
+  //noStroke();
+  //rect(0, 0, width, height);
   //noFill();
   //stroke(0);
+  ripple.draw();
   strokeWeight(3);
   for(int i=0; i<NUM_BOIDS; ++i){
     flock[i].update();
     flock[i].drawMe();
+    ripple.disturb((int)flock[i].xpos, (int)flock[i].ypos);
   }
+ 
   /*make the area of message
   noStroke();
   fill(30);
