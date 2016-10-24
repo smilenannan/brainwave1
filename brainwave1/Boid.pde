@@ -36,9 +36,14 @@ public class Boid{
   
   //draw fish
   void drawMe(){
-    line(xpos, ypos, xpos-TRAIL_SCALE*vx, ypos-TRAIL_SCALE*vy);
-    stroke(255, 110, 0);
-    //stroke(random(0, 255), random(0, 255), random(0, 255));
+    float velocity = sqrt(sq(vx) + sq(vy));
+    stroke(255, 110, 0, 150);
+    fill(255, 110, 0, 200);
+    pushMatrix();
+    translate(xpos,ypos);
+    ellipse(0, 0,20,20);
+    line(0,0,-20*vx/velocity,-20*vy/velocity);
+    popMatrix();
   }
    
   //decide next position

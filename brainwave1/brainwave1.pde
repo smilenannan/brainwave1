@@ -13,6 +13,9 @@ float r2 = 0.8; // Separation: avoid bunching up
 float r3 = 0.1; // Alingment:  match average flock speed
 
 Boid[] flock = new Boid[NUM_BOIDS];
+SeekObject[] seek1 = new SeekObject[NUM_BOIDS];
+SeekObject[] seek2 = new SeekObject[NUM_BOIDS];
+SeekObject[] seek3 = new SeekObject[NUM_BOIDS];
 
 //PFont font;
 //String msg = "";
@@ -35,6 +38,10 @@ void setup(){
      
     flock[i].vx = random(-5, 5);
     flock[i].vy = random(-5, 5);
+    
+    seek1[i] = new SeekObject(flock[i].xpos+10,flock[i].ypos+10,12.0,16.0);
+    seek2[i] = new SeekObject(seek1[i].xpos+10,seek1[i].ypos+10,12.0,16.0);
+    seek3[i] = new SeekObject(seek2[i].xpos+10,seek2[i].ypos+10,12.0,16.0);
   }
   
   frameRate(30);
@@ -54,7 +61,13 @@ void draw(){
   strokeWeight(3);
   for(int i=0; i<NUM_BOIDS; ++i){
     flock[i].update();
+    seek1[i].update(flock[i].xpos,flock[i].ypos);
+    seek2[i].update(seek1[i].xpos,seek1[i].ypos);
+    seek3[i].update(seek2[i].xpos,seek2[i].ypos);
     flock[i].drawMe();
+    seek1[i].drawSeekAgent1();
+    seek2[i].drawSeekAgent1();
+    seek3[i].drawSeekAgent1();
   }
   /*make the area of message
   noStroke();
