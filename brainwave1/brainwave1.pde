@@ -76,13 +76,10 @@ void draw(){
     seek2[i].update(seek1[i].xpos,seek1[i].ypos);
     seek3[i].update(seek2[i].xpos,seek2[i].ypos);
     flock[i].drawMe();
-<<<<<<< HEAD
     ripple.disturb((int)flock[i].xpos, (int)flock[i].ypos);
-=======
     seek1[i].drawSeekAgent1();
     seek2[i].drawSeekAgent1();
     seek3[i].drawSeekAgent1();
->>>>>>> 42a0e4c... mainファイルへのSeekObjectクラスの適応
   }
  
   /*make the area of message
