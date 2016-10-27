@@ -1,3 +1,6 @@
+import oscP5.*;
+import netP5.*;
+
 int NUM_BOIDS = 30;
 int DIST_THRESHOLD1 = 10;
 int DIST_THRESHOLD2 = 20;
@@ -8,9 +11,9 @@ float FACTOR_ALINGMENT = 10;
 float VELOCITY_LIMIT = 2;
 float TRAIL_SCALE = 1;
 
-float r1 = 1.0; // Cohesion:   pull to center of flock
-float r2 = 0.8; // Separation: avoid bunching up
-float r3 = 0.1; // Alingment:  match average flock speed
+float r1 = 1.0; // default, Cohesion:   pull to center of flock
+float r2 = 0.8; // default, Separation: avoid bunching up
+float r3 = 0.1; // default, Alingment:  match average flock speed
 
 PImage img;
 Ripple ripple;
@@ -20,10 +23,20 @@ SeekObject[] seek1 = new SeekObject[NUM_BOIDS];
 SeekObject[] seek2 = new SeekObject[NUM_BOIDS];
 SeekObject[] seek3 = new SeekObject[NUM_BOIDS];
 
-//PFont font;
-//String msg = "";
+//parameters for getting alpha waves
+final int N_CHANNELS = 4;
+final int BUFFER_SIZE = 10;
+float alpha_avg; //average of alpha waves
+float[][] buffer = new float[N_CHANNELS][BUFFER_SIZE];
+int pointer = 0;
+final int PORT = 5000;
+OscP5 oscP5 = new OscP5(this, PORT);
+
+PFont font;
+String msg;
    
 void setup(){
+  //println("hello, World!");
   img = loadImage("water.jpg");
   //tint(255, 255);
   //image(img, 0, 0);  
@@ -57,17 +70,52 @@ void setup(){
   smooth();
   //noSmooth();
   
-  //font = createFont("Courier", 12);
+  font = createFont("Courier", 12);
   //msg = "Area("+DIST_THRESHOLD1+","+DIST_THRESHOLD2+","+DIST_THRESHOLD3+") Velocity("+VELOCITY_LIMIT+")";
 }
 
  
 void draw(){
-  //fill(255, 255, 255, 75);
-  //noStroke();
-  //rect(0, 0, width, height);
-  //noFill();
-  //stroke(0);
+  msg = "alpha waves : ";
+  //fetch alpha waves
+  alpha_avg = 0;
+  for(int ch = 0; ch < N_CHANNELS; ch++){
+    for(int t = 0; t < BUFFER_SIZE; t++){
+      alpha_avg += buffer[ch][(t+pointer) % BUFFER_SIZE];
+    }
+  }
+  alpha_avg /= N_CHANNELS * BUFFER_SIZE;
+  
+  //update r1, r2, r3
+  if(alpha_avg != 0){
+    //necessary to revise here
+    r1 = alpha_avg * 10;
+    r2 = 1 / (alpha_avg+0.1);
+    r3 = alpha_avg * 5;
+    for(int i=0; i<NUM_BOIDS; ++i){
+    flock[i].r1 = r1;
+    flock[i].r2 = r2;
+    flock[i].r3 = r3;
+  }
+  }else{ //when muse is not connected
+    r1 = 1.0;
+    r2 = 0.8;
+    r3 = 0.1;
+  }
+
+  
+
+  /*
+  fill(255, 255, 255, 75);
+  noStroke();
+  rect(0, 0, width, height);
+  noFill();
+  stroke(0);
+  */
+  /*
+  for(int t = 0; t < BUFFER_SIZE; t++){
+    println(buffer[0][t]);
+  }*/
   ripple.draw();
   strokeWeight(3);
   for(int i=0; i<NUM_BOIDS; ++i){
@@ -81,15 +129,28 @@ void draw(){
     seek2[i].drawSeekAgent1();
     seek3[i].drawSeekAgent1();
   }
- 
-  /*make the area of message
+
+  //make the area of message
+  msg += alpha_avg;
   noStroke();
   fill(30);
   rect(0, height-20, width, height);
   fill(200);
   textFont(font);
-  text(msg, 7, height-7);*/
+  text(msg, 7, height-7);
 }
+
+//import the value of alpha waves
+void oscEvent(OscMessage msg){
+  float data;
+  if(msg.checkAddrPattern("/muse/elements/alpha_relative")){
+    for(int ch = 0; ch < N_CHANNELS; ch++){
+      data = msg.get(ch).floatValue();
+      buffer[ch][pointer] = data;
+    }
+    pointer = (pointer + 1) % BUFFER_SIZE;
+  }
+} 
 
 /*action when the pointer moves
 void mousePressed(){

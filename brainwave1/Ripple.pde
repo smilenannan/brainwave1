@@ -63,7 +63,7 @@ class Ripple{
       for (int x=0;x<width;x++) {
         short data = (short)((ripplemap[mapind-width]+ripplemap[mapind+width]+ripplemap[mapind-1]+ripplemap[mapind+1])>>1);
         data -= ripplemap[newind+i];
-        data -= data >> 4;
+        data -= data >> 3;
         ripplemap[newind+i]=data;
  
         //where data=0 then still, where data>0 then wave
