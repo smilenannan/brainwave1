@@ -12,6 +12,8 @@ public class Boid{
   float r1; // Cohesion:   pull to center of flock
   float r2; // Separation: avoid bunching up
   float r3; // Alingment:  match average flock speed
+  
+  PImage img;
 
   Boid(int NUM_BOIDS, 
        int DIST_THRESHOLD1, int DIST_THRESHOLD2, int DIST_THRESHOLD3, 
@@ -34,15 +36,37 @@ public class Boid{
   float xpos, ypos;
   float vx, vy;
   
+  PImage createLight(float rPower, float gPower, float bPower) {
+  int side = 100; // 1辺の大きさ
+  float center = side / 2.0; // 中心座標
+  
+  // 画像を生成
+  PImage img = createImage(side, side, RGB);
+  
+  // 画像の一つ一つのピクセルの色を設定する
+  for (int y = 0; y < side; y++) {
+    for (int x = 0; x < side; x++) {
+      //float distance = sqrt(sq(center - x) + sq(center - y));
+      float distance = (pow(center - x,2) + pow(center - y,2)) / 50.0;
+      int r = int( (255 * rPower) / distance );
+      int g = int( (255 * gPower) / distance );
+      int b = int( (255 * bPower) / distance );
+      img.pixels[x + y * side] = color(r, g, b);
+      }
+    }
+    return img;
+  }
+  
   //draw fish
   void drawMe(){
-    float velocity = sqrt(sq(vx) + sq(vy));
-    stroke(255, 110, 0, 150);
-    fill(255, 110, 0, 200);
+   // float velocity = sqrt(sq(vx) + sq(vy));
+   // float xnorm = vx/velocity;
+   // float ynorm = vy/velocity;
+    
     pushMatrix();
-    translate(xpos,ypos);
-    ellipse(0, 0,20,20);
-    line(0,0,-20*vx/velocity,-20*vy/velocity);
+    translate(xpos,ypos);   
+    img = createLight(random(0.5, 0.8), random(0.5, 0.8), random(0.5, 0.8));
+    image(img,-50,-50);
     popMatrix();
   }
    
