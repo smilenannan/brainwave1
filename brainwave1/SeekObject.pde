@@ -49,14 +49,14 @@ class SeekObject{
   disx = targetX - xpos;
   disy = targetY - ypos;
 
-  if(xpos < 0){
+  if(xpos < -100){
     xpos = width;
-  } else if(xpos > width){
+  } else if(xpos > width+100){
     xpos = 0;
   }
-  if(ypos < 0){
+  if(ypos < -100){
     ypos = height;
-  } else if(ypos > height){
+  } else if(ypos > height+100){
     ypos = 0;
   }
   }
