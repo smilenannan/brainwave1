@@ -1,7 +1,7 @@
 import oscP5.*;
 import netP5.*;
 
-int NUM_BOIDS = 40;
+int NUM_BOIDS = 50;
 int DIST_THRESHOLD1 = 10;
 int DIST_THRESHOLD2 = 20;
 int DIST_THRESHOLD3 = 30;
@@ -112,9 +112,9 @@ void draw(){
     flock[i].drawMe();
     ripple.disturb((int)flock[i].xpos, (int)flock[i].ypos);
     seek1[i].drawSeekAgent1(80,7);
-    ripple.disturb((int)seek1[i].xpos, (int)seek1[i].ypos);
+    //ripple.disturb((int)seek1[i].xpos, (int)seek1[i].ypos);
     seek2[i].drawSeekAgent1(8,1);
-    ripple.disturb((int)seek2[i].xpos, (int)seek2[i].ypos);
+    //ripple.disturb((int)seek2[i].xpos, (int)seek2[i].ypos);
     seek3[i].drawSeekAgent1(8,1);
     ripple.disturb((int)seek3[i].xpos, (int)seek3[i].ypos);
     blendMode(BLEND);

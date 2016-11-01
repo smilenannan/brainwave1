@@ -30,6 +30,7 @@ class Ripple{
   }
 
   public void draw(){
+    //tint(220, 200);
     image(img, 0, 0);
     loadPixels();
     texture = pixels;
