@@ -1,7 +1,7 @@
 import oscP5.*;
 import netP5.*;
 
-int NUM_BOIDS = 40;
+int NUM_BOIDS = 80;
 int DIST_THRESHOLD1 = 10;
 int DIST_THRESHOLD2 = 20;
 int DIST_THRESHOLD3 = 30;
