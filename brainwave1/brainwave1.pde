@@ -17,10 +17,8 @@ float r2 = 0.8; // Separation: avoid bunching up
 float r3 = 0.1; // Alingment:  match average flock speed
 
 PImage img1;
-PImage img2;
+//PImage img2;
 Ripple ripple;
-
-int time=0;
 
 Boid[] flock = new Boid[NUM_BOIDS];
 SeekObject[] seek1 = new SeekObject[NUM_BOIDS];
@@ -45,8 +43,8 @@ PFont font;
 String msg = "";
    
 void setup(){
-  img1 = loadImage("teamlab.jpg");
-  img2 = loadImage("stars.jpg");
+  img1 = loadImage("stars.jpg");
+  //img2 = loadImage("stars.jpg");
   size(1200, 700);
   //size(displayWidth, displayHeight);
   background(0);
@@ -71,7 +69,7 @@ void setup(){
     seek3[i] = new SeekObject(seek2[i].xpos+5,seek2[i].ypos+5,6.0,8.0);
 
   minim = new Minim(this);
-  player = minim.loadFile("BGMshort.mp3");
+  player = minim.loadFile("BGMrepeat.mp3");
   }
   
   ripple = new Ripple(img1);
