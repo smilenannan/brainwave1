@@ -1,7 +1,8 @@
 import oscP5.*;
 import netP5.*;
+import ddf.minim.*;
 
-int NUM_BOIDS = 50;
+int NUM_BOIDS = 100;
 int DIST_THRESHOLD1 = 10;
 int DIST_THRESHOLD2 = 20;
 int DIST_THRESHOLD3 = 30;
@@ -15,8 +16,11 @@ float r1 = 1.0; // Cohesion:   pull to center of flock
 float r2 = 0.8; // Separation: avoid bunching up
 float r3 = 0.1; // Alingment:  match average flock speed
 
-PImage img;
+PImage img1;
+PImage img2;
 Ripple ripple;
+
+int time=0;
 
 Boid[] flock = new Boid[NUM_BOIDS];
 SeekObject[] seek1 = new SeekObject[NUM_BOIDS];
@@ -32,12 +36,18 @@ int pointer = 0;
 final int PORT = 5000;
 OscP5 oscP5 = new OscP5(this, PORT);
 
+//sound
+Minim minim;
+AudioPlayer player;
+
+//showing alpha_wave
 PFont font;
 String msg = "";
    
 void setup(){
-  img = loadImage("stars.jpg");
-  size(1680, 700);
+  img1 = loadImage("teamlab.jpg");
+  img2 = loadImage("stars.jpg");
+  size(1200, 700);
   //size(displayWidth, displayHeight);
   background(0);
   
@@ -59,9 +69,13 @@ void setup(){
     seek1[i] = new SeekObject(flock[i].xpos+5,flock[i].ypos+5,12.0,16.0);
     seek2[i] = new SeekObject(seek1[i].xpos+5,seek1[i].ypos+5,6.0,8.0);
     seek3[i] = new SeekObject(seek2[i].xpos+5,seek2[i].ypos+5,6.0,8.0);
+
+  minim = new Minim(this);
+  player = minim.loadFile("BGM1.mp3.mp3");
+  player.play();
   }
   
-  ripple = new Ripple(img);
+  ripple = new Ripple(img1);
   frameRate(30);
   noSmooth();
   
@@ -71,8 +85,21 @@ void setup(){
 
  
 void draw(){
+  /*text(time, 10, 35);
+  if (time%100 > 50){
+  image(img2,0,0);
+  ripple = new Ripple(img2);
+  }else if(time%100 < 50){
+  image(img1,0,0);
+  ripple = new Ripple(img1);  
+  }
+  if(time > 100){
+  time = 0;
+  }
+  time++;*/
+  
   msg = "alpha waves : ";
-  //fetch alpha waves
+  //fetch alpha waves 
   alpha_avg = 0;
   for(int ch = 0; ch < N_CHANNELS; ch++){
     for(int t = 0; t < BUFFER_SIZE; t++){
@@ -80,19 +107,31 @@ void draw(){
     }
   }
   alpha_avg /= N_CHANNELS * BUFFER_SIZE;
-  
   //update r1, r2, r3
   if(alpha_avg != 0){
     //necessary to revise here
-    r1 = alpha_avg * 10;
-    r2 = 1 / (alpha_avg+0.1);
-    r3 = alpha_avg * 5;
+    
     for(int i=0; i<NUM_BOIDS; ++i){
-    flock[i].r1 = r1;
-    flock[i].r2 = r2;
-    flock[i].r3 = r3;
-  }
-  }else{ //when muse is not connected
+      if (alpha_avg < 0.22){
+      flock[i].r1 = 0.1;
+      flock[i].r2 = 10.0;
+      flock[i].r3 = 0.1;
+      flock[i].VELOCITY_LIMIT = 100;
+    }else if(alpha_avg < 0.3){
+      flock[i].r1 = 20.0;
+      flock[i].r2 = 0.1;
+      flock[i].r3 = 10.0;
+      flock[i].VELOCITY_LIMIT = 2;
+    }else{
+      flock[i].r1 = 20.0;
+      flock[i].r2 = 0.1;
+      flock[i].r3 = 10.0;
+      flock[i].VELOCITY_LIMIT = 0;
+    }
+    }
+    
+    
+   }else{ //when muse is not connected
     r1 = 1.0;
     r2 = 0.8;
     r3 = 0.1;
@@ -121,6 +160,7 @@ void draw(){
   }
   //make the area of message
   msg += alpha_avg;
+  msg += "and_" + time;
   noStroke();
   fill(30);
   rect(0, height-20, width, height);
