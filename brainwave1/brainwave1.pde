@@ -1,5 +1,6 @@
 import oscP5.*;
 import netP5.*;
+import ddf.minim.*;
 
 int NUM_BOIDS = 50;
 int DIST_THRESHOLD1 = 10;
@@ -32,6 +33,11 @@ int pointer = 0;
 final int PORT = 5000;
 OscP5 oscP5 = new OscP5(this, PORT);
 
+//sound
+Minim minim;
+AudioPlayer player;
+
+//showing alpha_wave
 PFont font;
 String msg = "";
    
@@ -59,6 +65,10 @@ void setup(){
     seek1[i] = new SeekObject(flock[i].xpos+5,flock[i].ypos+5,12.0,16.0);
     seek2[i] = new SeekObject(seek1[i].xpos+5,seek1[i].ypos+5,6.0,8.0);
     seek3[i] = new SeekObject(seek2[i].xpos+5,seek2[i].ypos+5,6.0,8.0);
+
+  minim = new Minim(this);
+  player = minim.loadFile("BGM1.mp3.mp3");
+  player.play();
   }
   
   ripple = new Ripple(img);
@@ -80,7 +90,6 @@ void draw(){
     }
   }
   alpha_avg /= N_CHANNELS * BUFFER_SIZE;
-  
   //update r1, r2, r3
   if(alpha_avg != 0){
     //necessary to revise here
