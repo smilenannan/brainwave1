@@ -71,11 +71,11 @@ void setup(){
     seek3[i] = new SeekObject(seek2[i].xpos+5,seek2[i].ypos+5,6.0,8.0);
 
   minim = new Minim(this);
-  player = minim.loadFile("BGM1.mp3.mp3");
-  player.play();
+  player = minim.loadFile("BGMshort.mp3");
   }
   
   ripple = new Ripple(img1);
+  //ripple2 = new Ripple(img2);
   frameRate(30);
   noSmooth();
   
@@ -113,11 +113,14 @@ void draw(){
     
     for(int i=0; i<NUM_BOIDS; ++i){
       if (alpha_avg < 0.22){
+      player.close();
+      minim.stop();
       flock[i].r1 = 0.1;
       flock[i].r2 = 10.0;
       flock[i].r3 = 0.1;
       flock[i].VELOCITY_LIMIT = 100;
     }else if(alpha_avg < 0.3){
+      player.play();
       flock[i].r1 = 20.0;
       flock[i].r2 = 0.1;
       flock[i].r3 = 10.0;
@@ -160,7 +163,6 @@ void draw(){
   }
   //make the area of message
   msg += alpha_avg;
-  msg += "and_" + time;
   noStroke();
   fill(30);
   rect(0, height-20, width, height);
