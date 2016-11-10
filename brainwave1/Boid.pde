@@ -12,6 +12,8 @@ public class Boid{
   float r1; // Cohesion:   pull to center of flock
   float r2; // Separation: avoid bunching up
   float r3; // Alingment:  match average flock speed
+  
+  PImage img;
 
   Boid(int NUM_BOIDS, 
        int DIST_THRESHOLD1, int DIST_THRESHOLD2, int DIST_THRESHOLD3, 
@@ -34,11 +36,42 @@ public class Boid{
   float xpos, ypos;
   float vx, vy;
   
+  PImage createLight(float rPower, float gPower, float bPower) {
+  int side = 30; // 1辺の大きさ
+  float center = side / 2.0; // 中心座標
+  
+  // 画像を生成
+  PImage img = createImage(side, side, RGB);
+  
+  // 画像の一つ一つのピクセルの色を設定する
+  for (int y = 0; y < side; y++) {
+    for (int x = 0; x < side; x++) {
+      float Dis = sqrt(sq(center - x) + sq(center - y));
+      float distance = (pow(center - x,2) + pow(center - y,2)) / 50.0;
+      int r = int( (255 * rPower) / distance );
+      int g = int( (255 * gPower) / distance );
+      int b = int( (255 * bPower) / distance );
+      if(Dis<20){
+      img.pixels[x + y * side] = color(r, g, b,260-sq(Dis));
+      }else{
+      img.pixels[x + y * side] = color(r, g, b, 1);
+      }
+      }
+    }
+    return img;
+  }
+  
   //draw fish
   void drawMe(){
-    line(xpos, ypos, xpos-TRAIL_SCALE*vx, ypos-TRAIL_SCALE*vy);
-    stroke(255, 110, 0);
-    //stroke(random(0, 255), random(0, 255), random(0, 255));
+   // float velocity = sqrt(sq(vx) + sq(vy));
+   // float xnorm = vx/velocity;
+   // float ynorm = vy/velocity;
+    
+    pushMatrix();
+    translate(xpos,ypos);   
+    img = createLight(random(0.5, 0.8), random(0.5, 0.8), random(0.5, 0.8));
+    image(img,-15,-15);
+    popMatrix();
   }
    
   //decide next position
@@ -63,14 +96,14 @@ public class Boid{
     ypos += vy;
     
     //move fished from one side to the opposite side 
-    if(xpos < 0){
+    if(xpos < -100){
       xpos = width;
-    } else if(xpos > width){
+    } else if(xpos > width+100){
       xpos = 0;
     }
-    if(ypos < 0){
+    if(ypos < -100){
       ypos = height;
-    } else if(ypos > height){
+    } else if(ypos > height+100){
       ypos = 0;
     }
   }
