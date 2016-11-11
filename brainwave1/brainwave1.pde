@@ -18,9 +18,11 @@ float r3 = 0.1; // Alingment:  match average flock speed
 
 PImage img1;
 PImage img2;
-Ripple ripple;
+Ripple ripple1;
+Ripple ripple2;
 
 int time=0;
+boolean low_sound = false;
 
 Boid[] flock = new Boid[NUM_BOIDS];
 SeekObject[] seek1 = new SeekObject[NUM_BOIDS];
@@ -71,11 +73,11 @@ void setup(){
     seek3[i] = new SeekObject(seek2[i].xpos+5,seek2[i].ypos+5,6.0,8.0);
 
   minim = new Minim(this);
-  player = minim.loadFile("BGM1.mp3.mp3");
-  player.play();
+  //player.play();
   }
   
-  ripple = new Ripple(img1);
+  ripple1 = new Ripple(img1);
+  ripple2 = new Ripple(img2);
   frameRate(30);
   noSmooth();
   
@@ -85,43 +87,52 @@ void setup(){
 
  
 void draw(){
-  /*text(time, 10, 35);
+  text(time, 10, 35);
   if (time%100 > 50){
-  image(img2,0,0);
-  ripple = new Ripple(img2);
+  ripple1.draw();
   }else if(time%100 < 50){
-  image(img1,0,0);
-  ripple = new Ripple(img1);  
+  ripple2.draw();
   }
   if(time > 100){
   time = 0;
   }
-  time++;*/
+  time++;
   
   msg = "alpha waves : ";
   //fetch alpha waves 
   alpha_avg = 0;
+  /*
   for(int ch = 0; ch < N_CHANNELS; ch++){
     for(int t = 0; t < BUFFER_SIZE; t++){
       alpha_avg += buffer[ch][(t+pointer) % BUFFER_SIZE];
     }
   }
-  alpha_avg /= N_CHANNELS * BUFFER_SIZE;
+  alpha_avg /= N_CHANNELS * BUFFER_SIZE;*/
   //update r1, r2, r3
-  if(alpha_avg != 0){
+  if(alpha_avg == 0){
     //necessary to revise here
     
     for(int i=0; i<NUM_BOIDS; ++i){
-      if (alpha_avg < 0.22){
+      if (alpha_avg < -0.10){
       flock[i].r1 = 0.1;
       flock[i].r2 = 10.0;
       flock[i].r3 = 0.1;
       flock[i].VELOCITY_LIMIT = 100;
+      low_sound = false;
+      player.close();
+      //minim.stop();
+      
     }else if(alpha_avg < 0.3){
+      //print("kanamoto");
       flock[i].r1 = 20.0;
       flock[i].r2 = 0.1;
       flock[i].r3 = 10.0;
       flock[i].VELOCITY_LIMIT = 2;
+      if(low_sound == false){
+      player = minim.loadFile("BGMrepeat.mp3");
+      player.loop();
+      }
+      low_sound = true;
     }else{
       flock[i].r1 = 20.0;
       flock[i].r2 = 0.1;
@@ -140,7 +151,7 @@ void draw(){
   fill(0,0,0);
   noStroke();
   rect(0, 0, width, height);*/
-  ripple.draw();
+ // ripple.draw();
   for(int i=0; i<NUM_BOIDS; ++i){
     blendMode(BLEND);
     flock[i].update();
@@ -149,13 +160,15 @@ void draw(){
     seek3[i].update(seek2[i].xpos,seek2[i].ypos,10);
     blendMode(ADD);
     flock[i].drawMe();
-    ripple.disturb((int)flock[i].xpos, (int)flock[i].ypos);
+    ripple1.disturb((int)flock[i].xpos, (int)flock[i].ypos);
+    ripple2.disturb((int)flock[i].xpos, (int)flock[i].ypos);
     seek1[i].drawSeekAgent1(80,7);
     //ripple.disturb((int)seek1[i].xpos, (int)seek1[i].ypos);
     seek2[i].drawSeekAgent1(8,1);
     //ripple.disturb((int)seek2[i].xpos, (int)seek2[i].ypos);
     seek3[i].drawSeekAgent1(8,1);
-    ripple.disturb((int)seek3[i].xpos, (int)seek3[i].ypos);
+    ripple1.disturb((int)seek3[i].xpos, (int)seek3[i].ypos);
+    ripple2.disturb((int)seek3[i].xpos, (int)seek3[i].ypos);
     blendMode(BLEND);
   }
   //make the area of message
