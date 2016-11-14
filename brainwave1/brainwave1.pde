@@ -87,15 +87,41 @@ void setup(){
 
  
 void draw(){
-  text(time, 10, 35);
-  if (time%100 > 50){
+  
+  if (time%400 <201){
+  ripple2.draw();
+    if(time%400 <50){
+      fill(0,255*(50-time)/50);
+      rect(0,0,1200,700);
+    }else if(time%400 >150){
+      fill(0,255*(time-150)/50);
+      rect(0,0,1200,700);
+    }
+  }else if(time%400 >200){
+    ripple1.draw();
+    if(time%400 <250){
+      fill(0,255*(250-time)/50);
+      rect(0,0,1200,700);
+    }else if(time%400 >350){
+      fill(0,255*(time-350)/50);
+      rect(0,0,1200,700);
+    };
+  }
+  
+  if(time==399){
+  time = 0;
+  }
+  
+  
+  
+  /*if (time%100 > 50){
   ripple1.draw();
   }else if(time%100 < 50){
   ripple2.draw();
   }
   if(time > 100){
   time = 0;
-  }
+  }*/
   time++;
   
   msg = "alpha waves : ";
