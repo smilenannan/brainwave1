@@ -9,7 +9,7 @@ int DIST_THRESHOLD3 = 30;
 float FACTOR_COHESION = 100;
 float FACTOR_SEPARATION = 10;
 float FACTOR_ALINGMENT = 10;
-float VELOCITY_LIMIT = 2;
+float VELOCITY_LIMIT = 0;
 float TRAIL_SCALE = 2;
 
 float r1 = 1.0; // Cohesion:   pull to center of flock
@@ -126,7 +126,13 @@ void draw(){
   
   msg = "alpha waves : ";
   //fetch alpha waves 
-  alpha_avg = 0;
+  if (time < 50){
+    alpha_avg = 0;
+  }else if(time < 100){
+    alpha_avg = 0.2;
+  }else{
+    alpha_avg = 0.4;
+  }
   /*
   for(int ch = 0; ch < N_CHANNELS; ch++){
     for(int t = 0; t < BUFFER_SIZE; t++){
@@ -139,13 +145,15 @@ void draw(){
     //necessary to revise here
     
     for(int i=0; i<NUM_BOIDS; ++i){
-      if (alpha_avg < -0.10){
+      if (alpha_avg < 0.10){
       flock[i].r1 = 0.1;
       flock[i].r2 = 10.0;
       flock[i].r3 = 0.1;
       flock[i].VELOCITY_LIMIT = 100;
+      if(low_sound == true){
+        player.close();
+      }
       low_sound = false;
-      player.close();
       //minim.stop();
       
     }else if(alpha_avg < 0.3){
@@ -164,6 +172,10 @@ void draw(){
       flock[i].r2 = 0.1;
       flock[i].r3 = 10.0;
       flock[i].VELOCITY_LIMIT = 0;
+      if(low_sound == true){
+        player.close();
+      }
+      low_sound = false;
     }
     }
     
