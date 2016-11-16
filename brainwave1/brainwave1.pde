@@ -47,12 +47,20 @@ AudioPlayer player;
 //showing alpha_wave
 PFont font;
 String msg = "";
+
+// start window
+boolean start;
+Boid startBoid;
+SeekObject startSeek1;
+SeekObject startSeek2;
+SeekObject startSeek3;
    
 void setup(){
   img1 = loadImage("stars.jpg");
   img2 = loadImage("teamlab.jpg");
   img3 = loadImage("firefly.jpg");
-  size(1200, 700);
+  fullScreen();
+  //size(1200, 700);
   //size(displayWidth, displayHeight);
   background(0);
   
@@ -85,6 +93,20 @@ void setup(){
   noSmooth();
   
   font = createFont("Courier", 12);
+
+  // start window
+  start = false;
+  startBoid = new Boid(NUM_BOIDS, 
+                        DIST_THRESHOLD1, DIST_THRESHOLD2, DIST_THRESHOLD3, 
+                        FACTOR_COHESION, FACTOR_SEPARATION, FACTOR_ALINGMENT, 
+                        VELOCITY_LIMIT, 
+                        TRAIL_SCALE, 
+                        r1, r2, r3);
+  startBoid.xpos = 350; 
+  startBoid.ypos = 650;
+  startSeek1 = new SeekObject(startBoid.xpos+5,startBoid.ypos+5,12.0,16.0);
+  startSeek2 = new SeekObject(startSeek1.xpos+5,startSeek1.ypos+5,6.0,8.0);
+  startSeek3 = new SeekObject(startSeek2.xpos+5,startSeek2.ypos+5,6.0,8.0);
 }
 
  
@@ -107,6 +129,23 @@ void draw(){
   alpha_avg /= N_CHANNELS * BUFFER_SIZE;*/
   //update r1, r2, r3
     
+    
+  if(start==false){
+    fill(0);
+    rect(0,0,1500,1000);
+    startBoid.xpos = alpha_avg*10000;
+    /* need to revise
+    startSeek1.update(startBoid.xpos,startBoid.ypos,15);
+    startSeek2.update(startSeek2.xpos,startSeek2.ypos,10);
+    startSeek3.update(startSeek3.xpos,startSeek2.ypos,10);
+    startSeek1.drawSeekAgent1(80,7);
+    startSeek2.drawSeekAgent1(8,1);
+    startSeek3.drawSeekAgent1(8,1);*/
+    startBoid.drawMe();
+    if (startBoid.xpos > 300){
+      start = true;
+    }
+  }else{
   if (alpha_avg < 0.10){
     ripple1.draw();
   
@@ -117,7 +156,7 @@ void draw(){
   
     if (alpha_avg >0.08){
       fill(0,255*(alpha_avg-0.08)/0.02);
-      rect(0,0,1200,700);
+      rect(0,0,1500,1000);
     }
   }else if(alpha_avg < 0.3){
     ripple2.draw();
@@ -130,11 +169,11 @@ void draw(){
     
     if(alpha_avg < 0.12){
       fill(0,255*(0.12-alpha_avg)/0.02);
-      rect(0,0,1200,700);
+      rect(0,0,1500,1000);
     }
       if(alpha_avg >0.28){
       fill(0,255*(alpha_avg-0.28)/0.02);
-      rect(0,0,1200,700);
+      rect(0,0,1500,1000);
     }
   }else{
     ripple3.draw();
@@ -146,7 +185,7 @@ void draw(){
 
     if(alpha_avg < 0.32){
       fill(0,255*(0.32-alpha_avg)/0.02);
-      rect(0,0,1200,700);
+      rect(0,0,1500,1000);
     } 
     
   }
@@ -189,6 +228,7 @@ void draw(){
     ripple3.disturb((int)flock[i].xpos, (int)flock[i].ypos);
     blendMode(BLEND);
   }
+ }
 
   //make the area of message
   msg += alpha_avg;
