@@ -2,7 +2,7 @@ import oscP5.*;
 import netP5.*;
 import ddf.minim.*;
 
-int NUM_BOIDS = 100;
+int NUM_BOIDS = 10;
 int DIST_THRESHOLD1 = 10;
 int DIST_THRESHOLD2 = 20;
 int DIST_THRESHOLD3 = 30;
@@ -18,8 +18,10 @@ float r3 = 0.1; // Alingment:  match average flock speed
 
 PImage img1;
 PImage img2;
+PImage img3;
 Ripple ripple1;
 Ripple ripple2;
+Ripple ripple3;
 
 int time=0;
 boolean low_sound = false;
@@ -47,8 +49,9 @@ PFont font;
 String msg = "";
    
 void setup(){
-  img1 = loadImage("teamlab.jpg");
-  img2 = loadImage("stars.jpg");
+  img1 = loadImage("stars.jpg");
+  img2 = loadImage("teamlab.jpg");
+  img3 = loadImage("firefly.jpg");
   size(1200, 700);
   //size(displayWidth, displayHeight);
   background(0);
@@ -78,6 +81,7 @@ void setup(){
   
   ripple1 = new Ripple(img1);
   ripple2 = new Ripple(img2);
+  ripple3 = new Ripple(img3);
   frameRate(30);
   noSmooth();
   
@@ -88,7 +92,7 @@ void setup(){
  
 void draw(){
   
-  if (time%400 <201){
+ /* if (time%400 <201){
   ripple2.draw();
     if(time%400 <50){
       fill(0,255*(50-time)/50);
@@ -107,32 +111,25 @@ void draw(){
       rect(0,0,1200,700);
     };
   }
-  
+  */
   if(time==399){
   time = 0;
   }
   
-  
-  
-  /*if (time%100 > 50){
-  ripple1.draw();
-  }else if(time%100 < 50){
-  ripple2.draw();
-  }
-  if(time > 100){
-  time = 0;
-  }*/
-  time++;
+  time++; 
   
   msg = "alpha waves : ";
   //fetch alpha waves 
-  if (time < 50){
+  /*if (time < 50){
     alpha_avg = 0;
   }else if(time < 100){
     alpha_avg = 0.2;
   }else{
     alpha_avg = 0.4;
-  }
+  }*/
+  
+  alpha_avg = 0.35*time/399;
+  
   /*
   for(int ch = 0; ch < N_CHANNELS; ch++){
     for(int t = 0; t < BUFFER_SIZE; t++){
@@ -141,7 +138,8 @@ void draw(){
   }
   alpha_avg /= N_CHANNELS * BUFFER_SIZE;*/
   //update r1, r2, r3
-  if(alpha_avg == 0){
+  
+ // if(alpha_avg == 0){
     //necessary to revise here
     
     for(int i=0; i<NUM_BOIDS; ++i){
@@ -150,10 +148,17 @@ void draw(){
       flock[i].r2 = 10.0;
       flock[i].r3 = 0.1;
       flock[i].VELOCITY_LIMIT = 100;
+      ripple1.draw();
+      
       if(low_sound == true){
         player.close();
       }
       low_sound = false;
+      
+      if (alpha_avg >0.08){
+      fill(0,255*(alpha_avg-0.08)/0.02);
+      rect(0,0,1200,700);
+      }
       //minim.stop();
       
     }else if(alpha_avg < 0.3){
@@ -162,29 +167,48 @@ void draw(){
       flock[i].r2 = 0.1;
       flock[i].r3 = 10.0;
       flock[i].VELOCITY_LIMIT = 2;
+      ripple2.draw();
+      
       if(low_sound == false){
       player = minim.loadFile("BGMrepeat.mp3");
       player.loop();
       }
       low_sound = true;
+      
+      if(alpha_avg < 0.12){
+      fill(0,255*(0.12-alpha_avg)/0.02);
+      rect(0,0,1200,700);
+      }
+      if(alpha_avg >0.28){
+      fill(0,255*(alpha_avg-0.28)/0.02);
+      rect(0,0,1200,700);
+      }
+      
     }else{
       flock[i].r1 = 20.0;
       flock[i].r2 = 0.1;
       flock[i].r3 = 10.0;
       flock[i].VELOCITY_LIMIT = 0;
+      ripple3.draw();
+      
       if(low_sound == true){
         player.close();
       }
       low_sound = false;
-    }
+      if(alpha_avg < 0.32){
+      fill(0,255*(0.32-alpha_avg)/0.02);
+      rect(0,0,1200,700);
+      } 
+      
+      }
     }
     
     
-   }else{ //when muse is not connected
-    r1 = 1.0;
-    r2 = 0.8;
-    r3 = 0.1;
-  }
+ /* }else{ //when muse is not connected
+     r1 = 1.0;
+     r2 = 0.8;
+     r3 = 0.1;
+    }*/
   /*
   fill(0,0,0);
   noStroke();
@@ -200,6 +224,7 @@ void draw(){
     flock[i].drawMe();
     ripple1.disturb((int)flock[i].xpos, (int)flock[i].ypos);
     ripple2.disturb((int)flock[i].xpos, (int)flock[i].ypos);
+    ripple3.disturb((int)flock[i].xpos, (int)flock[i].ypos);
     seek1[i].drawSeekAgent1(80,7);
     //ripple.disturb((int)seek1[i].xpos, (int)seek1[i].ypos);
     seek2[i].drawSeekAgent1(8,1);
@@ -207,6 +232,7 @@ void draw(){
     seek3[i].drawSeekAgent1(8,1);
     ripple1.disturb((int)seek3[i].xpos, (int)seek3[i].ypos);
     ripple2.disturb((int)seek3[i].xpos, (int)seek3[i].ypos);
+    ripple3.disturb((int)flock[i].xpos, (int)flock[i].ypos);
     blendMode(BLEND);
   }
   //make the area of message
