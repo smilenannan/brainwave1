@@ -64,7 +64,7 @@ class Ripple{
       for (int x=0;x<width;x++) {
         short data = (short)((ripplemap[mapind-width]+ripplemap[mapind+width]+ripplemap[mapind-1]+ripplemap[mapind+1])>>1);
         data -= ripplemap[newind+i];
-        data -= data >> 3;
+        data -= data >> 2;
         ripplemap[newind+i]=data;
  
         //where data=0 then still, where data>0 then wave
@@ -88,11 +88,3 @@ class Ripple{
   }
 
 }
-/*
-詳細なご回答ありがとうございます。実際のところほとんどよく分かっていないため、とても参考になりました。このコードへの理解が深まりました。
-大変恐縮なのですが、一点質問がございます。
-
-size = width * (height+2) * 2;
-ripplemap = new int[size];
-
-としてripplemapという変数を設定しているのですが、これはどういう意味を持つ変数だと思われますでしょうか。rippleが*/

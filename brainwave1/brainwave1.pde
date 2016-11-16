@@ -76,7 +76,6 @@ void setup(){
     seek3[i] = new SeekObject(seek2[i].xpos+5,seek2[i].ypos+5,6.0,8.0);
 
   minim = new Minim(this);
-  //player.play();
   }
   
   ripple1 = new Ripple(img1);
@@ -86,47 +85,16 @@ void setup(){
   noSmooth();
   
   font = createFont("Courier", 12);
-  //msg = "Area("+DIST_THRESHOLD1+","+DIST_THRESHOLD2+","+DIST_THRESHOLD3+") Velocity("+VELOCITY_LIMIT+")";
 }
 
  
 void draw(){
-  
- /* if (time%400 <201){
-  ripple2.draw();
-    if(time%400 <50){
-      fill(0,255*(50-time)/50);
-      rect(0,0,1200,700);
-    }else if(time%400 >150){
-      fill(0,255*(time-150)/50);
-      rect(0,0,1200,700);
-    }
-  }else if(time%400 >200){
-    ripple1.draw();
-    if(time%400 <250){
-      fill(0,255*(250-time)/50);
-      rect(0,0,1200,700);
-    }else if(time%400 >350){
-      fill(0,255*(time-350)/50);
-      rect(0,0,1200,700);
-    };
-  }
-  */
+  msg = "alpha waves : ";
+
   if(time==399){
   time = 0;
   }
-  
   time++; 
-  
-  msg = "alpha waves : ";
-  //fetch alpha waves 
-  /*if (time < 50){
-    alpha_avg = 0;
-  }else if(time < 100){
-    alpha_avg = 0.2;
-  }else{
-    alpha_avg = 0.4;
-  }*/
   
   alpha_avg = 0.35*time/399;
   
@@ -138,90 +106,70 @@ void draw(){
   }
   alpha_avg /= N_CHANNELS * BUFFER_SIZE;*/
   //update r1, r2, r3
-  
- // if(alpha_avg == 0){
-    //necessary to revise here
     
-      if (alpha_avg < 0.10){
-      ripple1.draw();
-      
-      if(low_sound == true){
-        player.close();
-      }
-      low_sound = false;
-      
-      if (alpha_avg >0.08){
+  if (alpha_avg < 0.10){
+    ripple1.draw();
+  
+    if(low_sound == true){
+      player.close();
+    }
+    low_sound = false;
+  
+    if (alpha_avg >0.08){
       fill(0,255*(alpha_avg-0.08)/0.02);
       rect(0,0,1200,700);
-      }
-      //minim.stop();
-      
-    }else if(alpha_avg < 0.3){
-
-      ripple2.draw();
-      
-      if(low_sound == false){
+    }
+  }else if(alpha_avg < 0.3){
+    ripple2.draw();
+    
+    if(low_sound == false){
       player = minim.loadFile("BGMrepeat.mp3");
       player.loop();
-      }
-      low_sound = true;
-      
-      if(alpha_avg < 0.12){
+    }
+    low_sound = true;
+    
+    if(alpha_avg < 0.12){
       fill(0,255*(0.12-alpha_avg)/0.02);
       rect(0,0,1200,700);
-      }
+    }
       if(alpha_avg >0.28){
       fill(0,255*(alpha_avg-0.28)/0.02);
       rect(0,0,1200,700);
-      }
-      
-    }else{
-      ripple3.draw();
-      
-      if(low_sound == true){
-        player.close();
-      }
-      low_sound = false;
-      if(alpha_avg < 0.32){
+    }
+  }else{
+    ripple3.draw();
+    
+    if(low_sound == true){
+      player.close();
+    }
+    low_sound = false;
+
+    if(alpha_avg < 0.32){
       fill(0,255*(0.32-alpha_avg)/0.02);
       rect(0,0,1200,700);
-      } 
-      
-      }
+    } 
     
+  }
     
-    
-    for(int i=0; i<NUM_BOIDS; ++i){
-      if (alpha_avg < 0.10){
-      flock[i].r1 = 0.1;
-      flock[i].r2 = 10.0;
-      flock[i].r3 = 0.1;
-      flock[i].VELOCITY_LIMIT = 100;    
-    }else if(alpha_avg < 0.3){
-      //print("kanamoto");
-      flock[i].r1 = 20.0;
-      flock[i].r2 = 0.1;
-      flock[i].r3 = 10.0;
-      flock[i].VELOCITY_LIMIT = 2;     
-    }else{
-      flock[i].r1 = 20.0;
-      flock[i].r2 = 0.1;
-      flock[i].r3 = 10.0;
-      flock[i].VELOCITY_LIMIT = 0;
-      }
+  for(int i=0; i<NUM_BOIDS; ++i){
+    if (alpha_avg < 0.10){
+    flock[i].r1 = 0.1;
+    flock[i].r2 = 10.0;
+    flock[i].r3 = 0.1;
+    flock[i].VELOCITY_LIMIT = 100;    
+  }else if(alpha_avg < 0.3){
+    flock[i].r1 = 20.0;
+    flock[i].r2 = 0.1;
+    flock[i].r3 = 10.0;
+    flock[i].VELOCITY_LIMIT = 2;     
+  }else{
+    flock[i].r1 = 20.0;
+    flock[i].r2 = 0.1;
+    flock[i].r3 = 10.0;
+    flock[i].VELOCITY_LIMIT = 0;
     }
+  }
     
-    
- /* }else{ //when muse is not connected
-     r1 = 1.0;
-     r2 = 0.8;
-     r3 = 0.1;
-    }*/
-  /*
-  fill(0,0,0);
-  noStroke();
-  rect(0, 0, width, height);*/
- // ripple.draw();
   for(int i=0; i<NUM_BOIDS; ++i){
     blendMode(BLEND);
     flock[i].update();
@@ -234,15 +182,14 @@ void draw(){
     ripple2.disturb((int)flock[i].xpos, (int)flock[i].ypos);
     ripple3.disturb((int)flock[i].xpos, (int)flock[i].ypos);
     seek1[i].drawSeekAgent1(80,7);
-    //ripple.disturb((int)seek1[i].xpos, (int)seek1[i].ypos);
     seek2[i].drawSeekAgent1(8,1);
-    //ripple.disturb((int)seek2[i].xpos, (int)seek2[i].ypos);
     seek3[i].drawSeekAgent1(8,1);
     ripple1.disturb((int)seek3[i].xpos, (int)seek3[i].ypos);
     ripple2.disturb((int)seek3[i].xpos, (int)seek3[i].ypos);
     ripple3.disturb((int)flock[i].xpos, (int)flock[i].ypos);
     blendMode(BLEND);
   }
+
   //make the area of message
   msg += alpha_avg;
   msg += "and_" + time;
@@ -265,13 +212,3 @@ void oscEvent(OscMessage msg){
     pointer = (pointer + 1) % BUFFER_SIZE;
   }
 } 
-
-/*action when the pointer moves
-void mousePressed(){
-  DIST_THRESHOLD1 = round(random(1,30));
-  DIST_THRESHOLD2 = DIST_THRESHOLD1+round(random(1,20));
-  DIST_THRESHOLD3 = DIST_THRESHOLD2+round(random(1,20));
-  VELOCITY_LIMIT = random(1, 10);
-  msg = "Area("+DIST_THRESHOLD1+","+DIST_THRESHOLD2+","+DIST_THRESHOLD3+") Velocity("+VELOCITY_LIMIT+")";
-  println("AREA("+DIST_THRESHOLD1+","+DIST_THRESHOLD2+","+DIST_THRESHOLD3+") VELOCITY("+VELOCITY_LIMIT+")");
-}*/
