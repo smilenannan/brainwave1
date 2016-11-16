@@ -2,7 +2,7 @@ import oscP5.*;
 import netP5.*;
 import ddf.minim.*;
 
-int NUM_BOIDS = 10;
+int NUM_BOIDS = 100;
 int DIST_THRESHOLD1 = 10;
 int DIST_THRESHOLD2 = 20;
 int DIST_THRESHOLD3 = 30;
@@ -142,12 +142,7 @@ void draw(){
  // if(alpha_avg == 0){
     //necessary to revise here
     
-    for(int i=0; i<NUM_BOIDS; ++i){
       if (alpha_avg < 0.10){
-      flock[i].r1 = 0.1;
-      flock[i].r2 = 10.0;
-      flock[i].r3 = 0.1;
-      flock[i].VELOCITY_LIMIT = 100;
       ripple1.draw();
       
       if(low_sound == true){
@@ -162,11 +157,7 @@ void draw(){
       //minim.stop();
       
     }else if(alpha_avg < 0.3){
-      //print("kanamoto");
-      flock[i].r1 = 20.0;
-      flock[i].r2 = 0.1;
-      flock[i].r3 = 10.0;
-      flock[i].VELOCITY_LIMIT = 2;
+
       ripple2.draw();
       
       if(low_sound == false){
@@ -185,10 +176,6 @@ void draw(){
       }
       
     }else{
-      flock[i].r1 = 20.0;
-      flock[i].r2 = 0.1;
-      flock[i].r3 = 10.0;
-      flock[i].VELOCITY_LIMIT = 0;
       ripple3.draw();
       
       if(low_sound == true){
@@ -200,6 +187,27 @@ void draw(){
       rect(0,0,1200,700);
       } 
       
+      }
+    
+    
+    
+    for(int i=0; i<NUM_BOIDS; ++i){
+      if (alpha_avg < 0.10){
+      flock[i].r1 = 0.1;
+      flock[i].r2 = 10.0;
+      flock[i].r3 = 0.1;
+      flock[i].VELOCITY_LIMIT = 100;    
+    }else if(alpha_avg < 0.3){
+      //print("kanamoto");
+      flock[i].r1 = 20.0;
+      flock[i].r2 = 0.1;
+      flock[i].r3 = 10.0;
+      flock[i].VELOCITY_LIMIT = 2;     
+    }else{
+      flock[i].r1 = 20.0;
+      flock[i].r2 = 0.1;
+      flock[i].r3 = 10.0;
+      flock[i].VELOCITY_LIMIT = 0;
       }
     }
     
