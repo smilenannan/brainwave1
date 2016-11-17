@@ -1,6 +1,7 @@
 import oscP5.*;
 import netP5.*;
 import ddf.minim.*;
+import java.util.Random;
 
 int NUM_BOIDS = 100;
 int DIST_THRESHOLD1 = 10;
@@ -16,14 +17,23 @@ float r1 = 1.0; // Cohesion:   pull to center of flock
 float r2 = 0.8; // Separation: avoid bunching up
 float r3 = 0.1; // Alingment:  match average flock speed
 
+PImage img0;
 PImage img1;
 PImage img2;
 PImage img3;
+PImage img4;
+Ripple[] ripple = new Ripple[5];
+
+Ripple buff;
+int ran[] = new int[5];
+
+/*
 Ripple ripple1;
 Ripple ripple2;
-Ripple ripple3;
+Ripple ripple3;*/
 
 int time=0;
+
 boolean low_sound = false;
 
 Boid[] flock = new Boid[NUM_BOIDS];
@@ -56,9 +66,11 @@ SeekObject startSeek2;
 SeekObject startSeek3;
    
 void setup(){
-  img1 = loadImage("stars.jpg");
-  img2 = loadImage("teamlab.jpg");
-  img3 = loadImage("firefly.jpg");
+  img0 = loadImage("stars.jpg");
+  img1 = loadImage("teamlab.jpg");
+  img2 = loadImage("firefly.jpg");
+  img3 = loadImage("jellyfish.jpeg");
+  img4 = loadImage("blue.jpg");
   fullScreen();
   //size(1200, 700);
   //size(displayWidth, displayHeight);
@@ -85,10 +97,13 @@ void setup(){
 
   minim = new Minim(this);
   }
-  
-  ripple1 = new Ripple(img1);
-  ripple2 = new Ripple(img2);
-  ripple3 = new Ripple(img3);
+
+  ripple[0] = new Ripple(img0);
+  ripple[1] = new Ripple(img1);
+  ripple[2] = new Ripple(img2);
+  ripple[3] = new Ripple(img3);
+  ripple[4] = new Ripple(img4);
+ 
   frameRate(30);
   noSmooth();
   
@@ -107,6 +122,10 @@ void setup(){
   startSeek1 = new SeekObject(startBoid.xpos+5,startBoid.ypos+5,12.0,16.0);
   startSeek2 = new SeekObject(startSeek1.xpos+5,startSeek1.ypos+5,6.0,8.0);
   startSeek3 = new SeekObject(startSeek2.xpos+5,startSeek2.ypos+5,6.0,8.0);
+  
+  for(int i=0; i<5; i++){
+    ran[i] = i;
+  }
 }
 
  
@@ -114,7 +133,16 @@ void draw(){
   msg = "alpha waves : ";
 
   if(time==399){
-  time = 0;
+  Random rnd = new Random();
+    for(int i = 0; i < 5; i++){
+          ran[i] = rnd.nextInt(5);
+          int x = ran[i];
+          for( i = 0; i < 5 ; i++)
+              if(ran[i] ==x)
+              break;
+      }
+     
+    time = 0;
   }
   time++; 
   
@@ -147,7 +175,7 @@ void draw(){
     }
   }else{
   if (alpha_avg < 0.10){
-    ripple1.draw();
+    ripple[ran[0]].draw();
   
     if(low_sound == true){
       player.close();
@@ -159,7 +187,7 @@ void draw(){
       rect(0,0,1500,1000);
     }
   }else if(alpha_avg < 0.3){
-    ripple2.draw();
+    ripple[ran[1]].draw();
     
     if(low_sound == false){
       player = minim.loadFile("BGMrepeat.mp3");
@@ -176,7 +204,7 @@ void draw(){
       rect(0,0,1500,1000);
     }
   }else{
-    ripple3.draw();
+    ripple[ran[2]].draw();
     
     if(low_sound == true){
       player.close();
@@ -186,9 +214,8 @@ void draw(){
     if(alpha_avg < 0.32){
       fill(0,255*(0.32-alpha_avg)/0.02);
       rect(0,0,1500,1000);
-    } 
-    
-  }
+    }
+  } 
     
   for(int i=0; i<NUM_BOIDS; ++i){
     if (alpha_avg < 0.10){
@@ -217,22 +244,24 @@ void draw(){
     seek3[i].update(seek2[i].xpos,seek2[i].ypos,10);
     blendMode(ADD);
     flock[i].drawMe();
-    ripple1.disturb((int)flock[i].xpos, (int)flock[i].ypos);
-    ripple2.disturb((int)flock[i].xpos, (int)flock[i].ypos);
-    ripple3.disturb((int)flock[i].xpos, (int)flock[i].ypos);
+    ripple[0].disturb((int)flock[i].xpos, (int)flock[i].ypos);
+    ripple[1].disturb((int)flock[i].xpos, (int)flock[i].ypos);
+    ripple[2].disturb((int)flock[i].xpos, (int)flock[i].ypos);
     seek1[i].drawSeekAgent1(80,7);
     seek2[i].drawSeekAgent1(8,1);
     seek3[i].drawSeekAgent1(8,1);
-    ripple1.disturb((int)seek3[i].xpos, (int)seek3[i].ypos);
-    ripple2.disturb((int)seek3[i].xpos, (int)seek3[i].ypos);
-    ripple3.disturb((int)flock[i].xpos, (int)flock[i].ypos);
+    ripple[0].disturb((int)seek3[i].xpos, (int)seek3[i].ypos);
+    ripple[1].disturb((int)seek3[i].xpos, (int)seek3[i].ypos);
+    ripple[2].disturb((int)flock[i].xpos, (int)flock[i].ypos);
     blendMode(BLEND);
+    }
   }
- }
+ 
 
   //make the area of message
   msg += alpha_avg;
   msg += "and_" + time;
+  //msg += "_and_" + ran1 + " "+ ran2;
   noStroke();
   fill(30);
   rect(0, height-20, width, height);
