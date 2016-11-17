@@ -60,10 +60,14 @@ String msg = "";
 
 // start window
 boolean start;
-Boid startBoid;
+Boid startBoid1;
 SeekObject startSeek1;
 SeekObject startSeek2;
 SeekObject startSeek3;
+Boid startBoid2;
+SeekObject startSeek4;
+SeekObject startSeek5;
+SeekObject startSeek6;
    
 void setup(){
   img0 = loadImage("stars.jpg");
@@ -111,18 +115,28 @@ void setup(){
 
   // start window
   start = false;
-  startBoid = new Boid(NUM_BOIDS, 
+  startBoid1 = new Boid(NUM_BOIDS, 
                         DIST_THRESHOLD1, DIST_THRESHOLD2, DIST_THRESHOLD3, 
                         FACTOR_COHESION, FACTOR_SEPARATION, FACTOR_ALINGMENT, 
                         VELOCITY_LIMIT, 
                         TRAIL_SCALE, 
                         r1, r2, r3);
-  startBoid.xpos = 350; 
-  startBoid.ypos = 650;
-  startSeek1 = new SeekObject(startBoid.xpos+5,startBoid.ypos+5,12.0,16.0);
+  startBoid2 = new Boid(NUM_BOIDS, 
+                        DIST_THRESHOLD1, DIST_THRESHOLD2, DIST_THRESHOLD3, 
+                        FACTOR_COHESION, FACTOR_SEPARATION, FACTOR_ALINGMENT, 
+                        VELOCITY_LIMIT, 
+                        TRAIL_SCALE, 
+                        r1, r2, r3);
+                       
+  startBoid1.ypos = 650;
+
+  startBoid2.ypos = 650;
+  startSeek1 = new SeekObject(startBoid1.xpos+5,startBoid1.ypos+5,12.0,16.0);
   startSeek2 = new SeekObject(startSeek1.xpos+5,startSeek1.ypos+5,6.0,8.0);
   startSeek3 = new SeekObject(startSeek2.xpos+5,startSeek2.ypos+5,6.0,8.0);
-  
+  startSeek4 = new SeekObject(startBoid2.xpos+5,startBoid2.ypos+5,12.0,16.0);
+  startSeek5 = new SeekObject(startSeek4.xpos+5,startSeek4.ypos+5,6.0,8.0);
+  startSeek6 = new SeekObject(startSeek5.xpos+5,startSeek5.ypos+5,6.0,8.0);
   for(int i=0; i<5; i++){
     ran[i] = i;
   }
@@ -131,8 +145,51 @@ void setup(){
  
 void draw(){
   msg = "alpha waves : ";
-
-  if(time==399){
+  
+  time++; 
+  //alpha_avg = 0.35*time/199;
+  
+  
+  for(int ch = 0; ch < N_CHANNELS; ch++){
+    for(int t = 0; t < BUFFER_SIZE; t++){
+      alpha_avg += buffer[ch][(t+pointer) % BUFFER_SIZE];
+    }
+  }
+  alpha_avg /= N_CHANNELS * BUFFER_SIZE;
+  //update r1, r2, r3
+    
+    
+  if(start==false){
+    fill(0);
+    rect(0,0,1500,1000);
+    startBoid1.xpos = time*1.0/199*displayWidth/2;
+    startBoid2.xpos = displayWidth-time*1.0/199*displayWidth/2;
+    // need to revise
+    blendMode(BLEND);
+    startSeek1.update(startBoid1.xpos,startBoid1.ypos,15);
+    startSeek2.update(startSeek1.xpos,startSeek1.ypos,10);
+    startSeek3.update(startSeek2.xpos,startSeek2.ypos,10);
+    startSeek4.update(startBoid2.xpos,startBoid2.ypos,15);
+    startSeek5.update(startSeek4.xpos,startSeek4.ypos,10);
+    startSeek6.update(startSeek5.xpos,startSeek5.ypos,10);
+    blendMode(ADD);
+    startSeek1.drawSeekAgent1(80,7);
+    startSeek2.drawSeekAgent1(8,1);
+    startSeek3.drawSeekAgent1(8,1);
+    startBoid1.drawMe();
+    startSeek4.drawSeekAgent1(80,7);
+    startSeek5.drawSeekAgent1(8,1);
+    startSeek6.drawSeekAgent1(8,1);
+    startBoid2.drawMe(); 
+    blendMode(BLEND);
+    if (startBoid1.xpos == displayWidth/2){
+      start = true;
+    }
+  }else{
+    
+      ripple[ran[0]].draw();
+  
+  if(time >199){
   Random rnd = new Random();
     for(int i = 0; i < 5; i++){
           ran[i] = rnd.nextInt(5);
@@ -144,81 +201,33 @@ void draw(){
      
     time = 0;
   }
-  time++; 
   
-  alpha_avg = 0.35*time/399;
   
-  /*
-  for(int ch = 0; ch < N_CHANNELS; ch++){
-    for(int t = 0; t < BUFFER_SIZE; t++){
-      alpha_avg += buffer[ch][(t+pointer) % BUFFER_SIZE];
-    }
+  if (time < 30){
+      fill(0,255*(30-time)/30);
+      rect(0,0,displayWidth,displayHeight);
+  }else if(time >= 170){
+      fill(0,255*(time-170)/30);
+      rect(0,0,displayWidth,displayHeight);
   }
-  alpha_avg /= N_CHANNELS * BUFFER_SIZE;*/
-  //update r1, r2, r3
-    
-    
-  if(start==false){
-    fill(0);
-    rect(0,0,1500,1000);
-    startBoid.xpos = alpha_avg*10000;
-    /* need to revise
-    startSeek1.update(startBoid.xpos,startBoid.ypos,15);
-    startSeek2.update(startSeek2.xpos,startSeek2.ypos,10);
-    startSeek3.update(startSeek3.xpos,startSeek2.ypos,10);
-    startSeek1.drawSeekAgent1(80,7);
-    startSeek2.drawSeekAgent1(8,1);
-    startSeek3.drawSeekAgent1(8,1);*/
-    startBoid.drawMe();
-    if (startBoid.xpos > 300){
-      start = true;
-    }
-  }else{
-  if (alpha_avg < 0.10){
-    ripple[ran[0]].draw();
   
-    if(low_sound == true){
-      player.close();
-    }
-    low_sound = false;
-  
-    if (alpha_avg >0.08){
-      fill(0,255*(alpha_avg-0.08)/0.02);
-      rect(0,0,1500,1000);
-    }
-  }else if(alpha_avg < 0.3){
-    ripple[ran[1]].draw();
+   
+   if(alpha_avg < 0.3){
     
     if(low_sound == false){
       player = minim.loadFile("BGMrepeat.mp3");
       player.loop();
     }
     low_sound = true;
-    
-    if(alpha_avg < 0.12){
-      fill(0,255*(0.12-alpha_avg)/0.02);
-      rect(0,0,1500,1000);
-    }
-      if(alpha_avg >0.28){
-      fill(0,255*(alpha_avg-0.28)/0.02);
-      rect(0,0,1500,1000);
-    }
+
   }else{
-    ripple[ran[2]].draw();
-    
     if(low_sound == true){
       player.close();
     }
-    low_sound = false;
-
-    if(alpha_avg < 0.32){
-      fill(0,255*(0.32-alpha_avg)/0.02);
-      rect(0,0,1500,1000);
     }
-  } 
     
   for(int i=0; i<NUM_BOIDS; ++i){
-    if (alpha_avg < 0.10){
+    if (alpha_avg < 0.20){
     flock[i].r1 = 0.1;
     flock[i].r2 = 10.0;
     flock[i].r3 = 0.1;
@@ -245,14 +254,10 @@ void draw(){
     blendMode(ADD);
     flock[i].drawMe();
     ripple[0].disturb((int)flock[i].xpos, (int)flock[i].ypos);
-    ripple[1].disturb((int)flock[i].xpos, (int)flock[i].ypos);
-    ripple[2].disturb((int)flock[i].xpos, (int)flock[i].ypos);
     seek1[i].drawSeekAgent1(80,7);
     seek2[i].drawSeekAgent1(8,1);
     seek3[i].drawSeekAgent1(8,1);
     ripple[0].disturb((int)seek3[i].xpos, (int)seek3[i].ypos);
-    ripple[1].disturb((int)seek3[i].xpos, (int)seek3[i].ypos);
-    ripple[2].disturb((int)flock[i].xpos, (int)flock[i].ypos);
     blendMode(BLEND);
     }
   }
